@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Executivo Médico | Hospital Provisão - Dr. Rodrigo Almeida</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+                    },
+                    colors: {
+                        navy: {
+                            950: '#070a12',
+                            900: '#0f172a',
+                            850: '#151f38',
+                            800: '#1e293b',
+                            700: '#334155'
+                        },
+                        brand: {
+                            cyan: '#00a8ff',
+                            electric: '#3b82f6',
+                            emerald: '#10b981',
+                            amber: '#f59e0b',
+                            purple: '#8b5cf6'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #070a12;
+            color: #f8fafc;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism Cards */
+        .glass-card {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(21, 31, 56, 0.7) 100%);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(0, 168, 255, 0.25);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Custom Glow Accent */
+        .glow-cyan {
+            box-shadow: 0 0 25px rgba(0, 168, 255, 0.15);
+        }
+
+        .glow-emerald {
+            box-shadow: 0 0 25px rgba(16, 185, 129, 0.15);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #070a12;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00a8ff;
+        }
+
+        /* Badges */
+        .badge-autorizada { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .badge-analise { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+        .badge-pix { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-brand-cyan selection:text-black">
+
+    <!-- TOP EXECUTIVE NAVIGATION HEADER -->
+    <header class="sticky top-0 z-50 bg-navy-900/90 backdrop-blur-xl border-b border-navy-700/60 px-4 sm:px-8 py-3.5 shadow-2xl">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            
+            <!-- Hospital Provisão Logo & Branding -->
+            <div class="flex items-center gap-4 w-full md:w-auto justify-between md:justify-start">
+                <div class="flex items-center gap-3">
+                    <!-- Crisp Vector Logo Symbol -->
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-navy-800 to-navy-900 border border-brand-cyan/40 p-2 flex items-center justify-center glow-cyan">
+                        <svg viewBox="0 0 100 100" class="w-full h-full">
+                            <path d="M 10 50 Q 50 15 90 50 Q 50 85 10 50 Z" fill="none" stroke="#00a8ff" stroke-width="6"/>
+                            <circle cx="50" cy="50" r="22" fill="none" stroke="#3b82f6" stroke-width="4"/>
+                            <circle cx="50" cy="50" r="11" fill="#070a12" stroke="#00a8ff" stroke-width="3"/>
+                            <circle cx="50" cy="50" r="5" fill="#00a8ff"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl font-black tracking-tight text-white">PRO<span class="text-brand-cyan">VISÃO</span></span>
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-brand-cyan/20 text-brand-cyan uppercase tracking-wider border border-brand-cyan/30">Executive</span>
+                        </div>
+                        <p class="text-xs text-slate-400 font-medium tracking-wide">Hospital Oftalmológico da Paraíba</p>
+                    </div>
+                </div>
+
+                <div class="md:hidden">
+                    <button onclick="window.print()" class="p-2 rounded-xl bg-navy-800 text-slate-300 hover:text-white border border-navy-700">
+                        <i data-lucide="printer" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Doctor & Specialty Badge Header -->
+            <div class="flex items-center gap-4 bg-navy-850 px-4 py-2 rounded-2xl border border-navy-700/80 w-full md:w-auto justify-center">
+                <div class="w-10 h-10 rounded-full bg-brand-cyan/15 border border-brand-cyan/40 flex items-center justify-center text-brand-cyan font-bold">
+                    <i data-lucide="user-check" class="w-5 h-5"></i>
+                </div>
+                <div class="text-left">
+                    <div class="flex items-center gap-2">
+                        <h2 class="text-sm font-bold text-white tracking-wide">Dr. Rodrigo Almeida</h2>
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    </div>
+                    <p class="text-xs text-brand-cyan font-medium">Aplicações Intravítreas / Injeções de Retina</p>
+                </div>
+            </div>
+
+            <!-- Header Action Controls -->
+            <div class="hidden md:flex items-center gap-3">
+                <button onclick="resetAllFilters()" class="px-3.5 py-2 rounded-xl bg-navy-800 hover:bg-navy-700 text-slate-300 text-xs font-semibold flex items-center gap-2 border border-navy-700 transition">
+                    <i data-lucide="rotate-ccw" class="w-3.5 h-3.5 text-brand-cyan"></i>
+                    Limpar Filtros
+                </button>
+                <button onclick="exportCSV()" class="px-4 py-2 rounded-xl bg-brand-cyan hover:bg-sky-400 text-black text-xs font-bold flex items-center gap-2 shadow-lg shadow-brand-cyan/20 transition active:scale-95">
+                    <i data-lucide="download" class="w-4 h-4"></i>
+                    Exportar CSV
+                </button>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- DASHBOARD CONTAINER -->
+    <main class="max-w-7xl mx-auto w-full px-4 sm:px-8 py-6 space-y-6 flex-1">
+
+        <!-- DYNAMIC FILTER BAR -->
+        <section class="glass-card rounded-2xl p-4 sm:p-5 space-y-4">
+            
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-navy-700/60">
+                <div class="flex items-center gap-2">
+                    <div class="p-1.5 rounded-lg bg-brand-cyan/15 text-brand-cyan">
+                        <i data-lucide="filter" class="w-4 h-4"></i>
+                    </div>
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider">Filtros Dinâmicos de Produção</h3>
+                    <span id="activeCountBadge" class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-navy-800 text-slate-400 border border-navy-700">33 Registros</span>
+                </div>
+                
+                <!-- Quick Search Input -->
+                <div class="relative w-full sm:w-72">
+                    <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-slate-400"></i>
+                    <input type="text" id="searchInput" oninput="applyFilters()" placeholder="Buscar paciente, medicamento..." 
+                           class="w-full bg-navy-950 border border-navy-700 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-brand-cyan transition">
+                </div>
+            </div>
+
+            <!-- Filter Controls Grid -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                
+                <!-- Convênio -->
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Convênio / Pgto</label>
+                    <select id="filterConvenio" onchange="applyFilters()" class="w-full bg-navy-950 border border-navy-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-cyan transition">
+                        <option value="">Todos Convênios</option>
+                        <option value="UNIMED">UNIMED</option>
+                        <option value="FUSMA">FUSMA / Capitania</option>
+                        <option value="GEAP">GEAP</option>
+                        <option value="CASSI">CASSI</option>
+                        <option value="AMIL">AMIL</option>
+                        <option value="BRADESCO">BRADESCO</option>
+                        <option value="PIX">Particular (PIX)</option>
+                    </select>
+                </div>
+
+                <!-- Medicamento -->
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Medicamento</label>
+                    <select id="filterMedicamento" onchange="applyFilters()" class="w-full bg-navy-950 border border-navy-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-cyan transition">
+                        <option value="">Todos Medicamentos</option>
+                        <option value="Eylia">Eylia</option>
+                        <option value="Ozurdex">Ozurdex</option>
+                        <option value="Avastin">Avastin</option>
+                    </select>
+                </div>
+
+                <!-- Lateralidade (Olho) -->
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Lateralidade (Olho)</label>
+                    <select id="filterOlho" onchange="applyFilters()" class="w-full bg-navy-950 border border-navy-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-cyan transition">
+                        <option value="">Ambos (OD & OE)</option>
+                        <option value="OD">Olho Direito (OD)</option>
+                        <option value="OE">Olho Esquerdo (OE)</option>
+                    </select>
+                </div>
+
+                <!-- Sedação -->
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Anestesia / Sedação</label>
+                    <select id="filterSedacao" onchange="applyFilters()" class="w-full bg-navy-950 border border-navy-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-cyan transition">
+                        <option value="">Todas Opções</option>
+                        <option value="Com Sedação">Com Sedação</option>
+                        <option value="Sem Sedação">Sem Sedação</option>
+                    </select>
+                </div>
+
+                <!-- Status da Guia -->
+                <div class="col-span-2 sm:col-span-1">
+                    <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Status da Guia</label>
+                    <select id="filterStatus" onchange="applyFilters()" class="w-full bg-navy-950 border border-navy-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-cyan transition">
+                        <option value="">Todos Status</option>
+                        <option value="Guia Autorizada">Guia Autorizada</option>
+                        <option value="Em Análise">Em Análise / Pendente</option>
+                    </select>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- TOP EXECUTIVE KPIS ROW -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            
+            <!-- KPI 1: Faturamento Mapeado -->
+            <div class="glass-card rounded-2xl p-4 flex flex-col justify-between relative overflow-hidden group">
+                <div class="absolute -right-4 -top-4 w-20 h-20 bg-emerald-500/10 rounded-full blur-xl group-hover:bg-emerald-500/20 transition"></div>
+                <div class="flex items-center justify-between text-slate-400 mb-2">
+                    <span class="text-xs font-bold uppercase tracking-wider">Faturamento Mapeado</span>
+                    <div class="p-2 rounded-xl bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                        <i data-lucide="dollar-sign" class="w-4 h-4"></i>
+                    </div>
+                </div>
+                <div>
+                    <div class="text-2xl font-black text-emerald-400 tracking-tight" id="kpiRevenue">R$ 79.319,63</div>
+                    <p class="text-[11px] text-slate-400 mt-1" id="kpiRevenueSub">25 guias precificadas</p>
+                </div>
+            </div>
+
+            <!-- KPI 2: Total Aplicações -->
+            <div class="glass-card rounded-2xl p-4 flex flex-col justify-between relative overflow-hidden group">
+                <div class="absolute -right-4 -top-4 w-20 h-20 bg-brand-cyan/10 rounded-full blur-xl group-hover:bg-brand-cyan/20 transition"></div>
+                <div class="flex items-center justify-between text-slate-400 mb-2">
+                    <span class="text-xs font-bold uppercase tracking-wider">Total Aplicações</span>
+                    <div class="p-2 rounded-xl bg-brand-cyan/15 text-brand-cyan border border-brand-cyan/30">
+                        <i data-lucide="syringe" class="w-4 h-4"></i>
+                    </div>
+                </div>
+                <div>
+                    <div class="text-2xl font-black text-white tracking-tight" id="kpiTotalProcedures">33</div>
+                    <p class="text-[11px] text-brand-cyan font-medium mt-1" id="kpiEyeBreakdown">OD: 15 | OE: 17 | N/I: 1</p>
+                </div>
+            </div>
+
+            <!-- KPI 3: Guias Autorizadas -->
+            <div class="glass-card rounded-2xl p-4 flex flex-col justify-between relative overflow-hidden group">
+                <div class="flex items-center justify-between text-slate-400 mb-2">
+                    <span class="text-xs font-bold uppercase tracking-wider">Guias Autorizadas</span>
+                    <div class="p-2 rounded-xl bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                        <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+                    </div>
+                </div>
+                <div>
+                    <div class="text-2xl font-black text-emerald-300 tracking-tight" id="kpiAutorizadasCount">27</div>
+                    <p class="text-[11px] text-slate-400 mt-1" id="kpiAutorizadasPct">81,8% de aprovação</p>
+                </div>
+            </div>
+
+            <!-- KPI 4: Em Análise / Auditoria -->
+            <div class="glass-card rounded-2xl p-4 flex flex-col justify-between relative overflow-hidden group">
+                <div class="flex items-center justify-between text-slate-400 mb-2">
+                    <span class="text-xs font-bold uppercase tracking-wider">Em Análise</span>
+                    <div class="p-2 rounded-xl bg-amber-500/15 text-amber-400 border border-amber-500/30">
+                        <i data-lucide="clock" class="w-4 h-4"></i>
+                    </div>
+                </div>
+                <div>
+                    <div class="text-2xl font-black text-amber-400 tracking-tight" id="kpiAnaliseCount">6</div>
+                    <p class="text-[11px] text-slate-400 mt-1">Pendente conciliação</p>
+                </div>
+            </div>
+
+            <!-- KPI 5: Ticket Médio -->
+            <div class="glass-card rounded-2xl p-4 flex flex-col justify-between relative overflow-hidden group">
+                <div class="flex items-center justify-between text-slate-400 mb-2">
+                    <span class="text-xs font-bold uppercase tracking-wider">Ticket Médio</span>
+                    <div class="p-2 rounded-xl bg-brand-electric/15 text-brand-electric border border-brand-electric/30">
+                        <i data-lucide="trending-up" class="w-4 h-4"></i>
+                    </div>
+                </div>
+                <div>
+                    <div class="text-2xl font-black text-brand-electric tracking-tight" id="kpiAvgTicket">R$ 3.172,79</div>
+                    <p class="text-[11px] text-slate-400 mt-1">Por procedimento precificado</p>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- 4 MAIN ANALYTICAL CHARTS GRID -->
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            
+            <!-- Chart 1: Faturamento & Volume por Convênio -->
+            <div class="glass-card rounded-2xl p-5 space-y-4">
+                <div class="flex items-center justify-between pb-2 border-b border-navy-700/60">
+                    <div class="flex items-center gap-2">
+                        <div class="p-1.5 rounded-lg bg-emerald-500/15 text-emerald-400">
+                            <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+                        </div>
+                        <h3 class="text-sm font-bold text-white tracking-wide">Receita & Volume por Convênio</h3>
+                    </div>
+                    <span class="text-[11px] text-slate-400">Valores em R$</span>
+                </div>
+                <div class="h-64 relative">
+                    <canvas id="chartConvenio"></canvas>
+                </div>
+            </div>
+
+            <!-- Chart 2: Participação por Medicamento -->
+            <div class="glass-card rounded-2xl p-5 space-y-4">
+                <div class="flex items-center justify-between pb-2 border-b border-navy-700/60">
+                    <div class="flex items-center gap-2">
+                        <div class="p-1.5 rounded-lg bg-brand-cyan/15 text-brand-cyan">
+                            <i data-lucide="pie-chart" class="w-4 h-4"></i>
+                        </div>
+                        <h3 class="text-sm font-bold text-white tracking-wide">Distribuição por Medicamento</h3>
+                    </div>
+                    <span class="text-[11px] text-slate-400">Total: 33 Injeções</span>
+                </div>
+                <div class="h-64 relative flex items-center justify-center">
+                    <canvas id="chartMedicamento"></canvas>
+                </div>
+            </div>
+
+            <!-- Chart 3: Distribuição Diária de Atendimentos -->
+            <div class="glass-card rounded-2xl p-5 space-y-4">
+                <div class="flex items-center justify-between pb-2 border-b border-navy-700/60">
+                    <div class="flex items-center gap-2">
+                        <div class="p-1.5 rounded-lg bg-brand-electric/15 text-brand-electric">
+                            <i data-lucide="activity" class="w-4 h-4"></i>
+                        </div>
+                        <h3 class="text-sm font-bold text-white tracking-wide">Evolução Temporal (Outubro/2026)</h3>
+                    </div>
+                    <span class="text-[11px] text-slate-400">Volume por Sessão</span>
+                </div>
+                <div class="h-64 relative">
+                    <canvas id="chartTemporal"></canvas>
+                </div>
+            </div>
+
+            <!-- Chart 4: Lateralidade & Sedação Anestésica -->
+            <div class="glass-card rounded-2xl p-5 space-y-4">
+                <div class="flex items-center justify-between pb-2 border-b border-navy-700/60">
+                    <div class="flex items-center gap-2">
+                        <div class="p-1.5 rounded-lg bg-purple-500/15 text-purple-400">
+                            <i data-lucide="eye" class="w-4 h-4"></i>
+                        </div>
+                        <h3 class="text-sm font-bold text-white tracking-wide">Lateralidade (Olho) & Sedação</h3>
+                    </div>
+                    <span class="text-[11px] text-slate-400">Proporção OD vs OE</span>
+                </div>
+                <div class="h-64 relative flex items-center justify-center">
+                    <canvas id="chartOlho"></canvas>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- FULL DATA TABLE & MEDICAL AUDIT SECTION -->
+        <section class="glass-card rounded-2xl p-5 space-y-4">
+            
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-navy-700/60">
+                <div class="flex items-center gap-2">
+                    <div class="p-1.5 rounded-lg bg-brand-cyan/15 text-brand-cyan">
+                        <i data-lucide="table" class="w-4 h-4"></i>
+                    </div>
+                    <h3 class="text-sm font-bold text-white tracking-wide">Detalhamento dos Procedimentos Executados</h3>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <button onclick="exportCSV()" class="px-3 py-1.5 rounded-xl bg-navy-800 hover:bg-navy-700 text-slate-300 text-xs font-semibold flex items-center gap-1.5 border border-navy-700 transition">
+                        <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5 text-emerald-400"></i>
+                        Baixar Tabela CSV
+                    </button>
+                </div>
+            </div>
+
+            <!-- Responsive Table Wrapper -->
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs whitespace-nowrap">
+                    <thead>
+                        <tr class="text-slate-400 uppercase text-[10px] tracking-wider border-b border-navy-700 bg-navy-950/60">
+                            <th onclick="sortTable('data')" class="py-3 px-3 cursor-pointer hover:text-brand-cyan transition">
+                                Data <i data-lucide="arrow-up-down" class="w-3 h-3 inline ml-1"></i>
+                            </th>
+                            <th onclick="sortTable('paciente')" class="py-3 px-3 cursor-pointer hover:text-brand-cyan transition">
+                                Paciente <i data-lucide="arrow-up-down" class="w-3 h-3 inline ml-1"></i>
+                            </th>
+                            <th onclick="sortTable('olho')" class="py-3 px-3 text-center cursor-pointer hover:text-brand-cyan transition">
+                                Olho <i data-lucide="arrow-up-down" class="w-3 h-3 inline ml-1"></i>
+                            </th>
+                            <th onclick="sortTable('sedacao')" class="py-3 px-3 cursor-pointer hover:text-brand-cyan transition">
+                                Sedação <i data-lucide="arrow-up-down" class="w-3 h-3 inline ml-1"></i>
+                            </th>
+                            <th onclick="sortTable('medicamento')" class="py-3 px-3 cursor-pointer hover:text-brand-cyan transition">
+                                Medicamento <i data-lucide="arrow-up-down" class="w-3 h-3 inline ml-1"></i>
+                            </th>
+                            <th onclick="sortTable('convenio')" class="py-3 px-3 cursor-pointer hover:text-brand-cyan transition">
+                                Convênio <i data-lucide="arrow-up-down" class="w-3 h-3 inline ml-1"></i>
+                            </th>
+                            <th onclick="sortTable('status')" class="py-3 px-3 cursor-pointer hover:text-brand-cyan transition">
+                                Status Guia <i data-lucide="arrow-up-down" class="w-3 h-3 inline ml-1"></i>
+                            </th>
+                            <th onclick="sortTable('valor')" class="py-3 px-3 text-right cursor-pointer hover:text-brand-cyan transition">
+                                Valor (R$) <i data-lucide="arrow-up-down" class="w-3 h-3 inline ml-1"></i>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody" class="divide-y divide-navy-700/50 text-[11px]">
+                        <!-- Dynamic Rows injected via JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Table Dynamic Footer -->
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-2 pt-3 border-t border-navy-700/60 text-xs">
+                <span class="text-slate-400" id="tableSummaryText">Mostrando 33 procedimentos</span>
+                <div class="flex items-center gap-3">
+                    <span class="text-slate-400">Total Selecionado:</span>
+                    <span class="text-emerald-400 font-extrabold text-sm" id="tableTotalSum">R$ 79.319,63</span>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-navy-900 border-t border-navy-700/60 py-4 px-6 text-center text-xs text-slate-500">
+        <p>© 2026 Hospital Provisão - Hospital Oftalmológico da Paraíba | Sistema de Gestão Oftalmológica - Dr. Rodrigo Almeida</p>
+    </footer>
+
+    <!-- JAVASCRIPT ENGINE -->
+    <script>
+        // Full dataset of 33 records for Dr. Rodrigo Almeida (October 2026)
+        const dataset = [
+            { id: 1,  data: '01/10/2026', paciente: 'Maria Inacio da Silva', olho: 'OE', sedacao: 'Sem Sedação', medicamento: 'Eylia', convenio: 'UNIMED', status: 'Guia Autorizada', valor: 2427.56 },
+            { id: 2,  data: '01/10/2026', paciente: 'Verônica Carneiro de Oliveira Melo', olho: 'OE', sedacao: 'Sem Sedação', medicamento: 'Eylia', convenio: 'UNIMED', status: 'Guia Autorizada', valor: 2427.56 },
+            { id: 3,  data: '01/10/2026', paciente: 'Adriana Ramos Fontes', olho: 'OE', sedacao: 'Sem Sedação', medicamento: 'Eylia', convenio: 'PIX', status: 'Guia Autorizada', valor: 2500.00 },
+            { id: 4,  data: '05/10/2026', paciente: 'João Alfredo Silva', olho: 'OD', sedacao: 'Sem Sedação', medicamento: 'Ozurdex', convenio: 'PIX', status: 'Guia Autorizada', valor: 5000.00 },
+            { id: 5,  data: '08/10/2026', paciente: 'Elizabete Regina Santos Mendonça', olho: 'OE', sedacao: 'Com Sedação', medicamento: 'Eylia', convenio: 'Outros', status: 'Em Análise', valor: 0.00 },
+            { id: 6,  data: '08/10/2026', paciente: 'Maria Inacio da Silva', olho: 'OD', sedacao: 'Sem Sedação', medicamento: 'Eylia', convenio: 'BRADESCO', status: 'Guia Autorizada', valor: 3624.40 },
+            { id: 7,  data: '08/10/2026', paciente: 'Geralda da Silva Lima', olho: 'OD', sedacao: 'Sem Sedação', medicamento: 'Eylia', convenio: 'FUSMA', status: 'Guia Autorizada', valor: 4100.00 },
+            { id: 8,  data: '08/10/2026', paciente: 'Antonieta Silva Nóbrega', olho: 'OD', sedacao: 'Com Sedação', medicamento: 'Eylia', convenio: 'UNIMED', status: 'Guia Autorizada', valor: 2427.56 },
+            { id: 9,  data: '08/10/2026', paciente: 'Marinete Costa de Araújo', olho: 'OE', sedacao: 'Com Sedação', medicamento: 'Ozurdex', convenio: 'UNIMED', status: 'Guia Autorizada', valor: 5000.00 },
+            { id: 10, data: '08/10/2026', paciente: 'Josselino Neves', olho: 'OD', sedacao: 'Com Sedação', medicamento: 'Ozurdex', convenio: 'GEAP', status: 'Guia Autorizada', valor: 3863.30 },
+            { id: 11, data: '08/10/2026', paciente: 'Gilberto Souto Muniz de Albuquerque', olho: 'OE', sedacao: 'Com Sedação', medicamento: 'Ozurdex', convenio: 'UNIMED', status: 'Guia Autorizada', valor: 5000.00 },
+            { id: 12, data: '19/10/2026', paciente: 'Pedro Alves da Nóbrega', olho: 'OD', sedacao: 'Sem Sedação', medicamento: 'Eylia', convenio: 'UNIMED', status: 'Em Análise', valor: 0.00 },
+            { id: 13, data: '19/10/2026', paciente: 'Ana Rosa Maria de Azevedo Oliveira', olho: 'OD', sedacao: 'Com Sedação', medicamento: 'Eylia', convenio: 'FUSMA', status: 'Em Análise', valor: 4100.00 },
+            { id: 14, data: '19/10/2026', paciente: 'Vicente Dantas Oliveira', olho: 'OD', sedacao: 'Sem Sedação', medicamento: 'Eylia', convenio: 'GEAP', status: 'Guia Autorizada', valor: 3863.30 },
+            { id: 15, data: '19/10/2026', paciente: 'Lilian Cristina Agostinho Fava', olho: 'OD', sedacao: 'Com Sedação', medicamento: 'Eylia', convenio: 'AMIL', status: 'Guia Autorizada', valor: 4326.00 },
+            { id: 16, data: '19/10/2026', paciente: 'Benjamim Germano Paredes Gomes', olho: 'OE', sedacao: 'Sem Sedação', medicamento: 'Eylia', convenio: 'UNIMED', status: 'Guia Autorizada', valor: 2427.56 },
+            { id: 17, data: '19/10/2026', paciente: 'Dvane Assis Diniz', olho: 'OD', sedacao: 'Sem Sedação', medicamento: 'Ozurdex', convenio: 'PIX', status: 'Guia Autorizada', valor: 0.00 },
+            { id: 18, data: '19/10/2026', paciente: 'Paulo Dittarso Maciel', olho: 'OE', sedacao: 'Sem Sedação', medicamento: 'Avastin', convenio: 'FUSMA', status: 'Guia Autorizada', valor: 4100.00 },
+            { id: 19, data: '19/10/2026', paciente: 'Semiramis Gouveia de Araujo Ribeiro', olho: 'OD', sedacao: 'Sem Sedação', medicamento: 'Eylia', convenio: 'GEAP', status: 'Guia Autorizada', valor: 3863.30 },
+            { id: 20, data: '19/10/2026', paciente: 'Maria das Graças de Andrade Marques', olho: 'OE', sedacao: 'Com Sedação', medicamento: 'Eylia', convenio: 'UNIMED', status: 'Guia Autorizada', valor: 2427.56 },
+            { id: 21, data: '19/10/2026', paciente: 'Niete André de Siqueira', olho: 'OE', sedacao: 'Sem Sedação', medicamento: 'Eylia', convenio: 'CASSI', status: 'Guia Autorizada', valor: 4146.99 },
+            { id: 22, data: '19/10/2026', paciente: 'Joana de Oliveira Silva', olho: 'OE', sedacao: 'Sem Sedação', medicamento: 'Eylia', convenio: 'Outros', status: 'Em Análise', valor: 0.00 },
+            { id: 23, data: '22/10/2026', paciente: 'Dvane Assis Diniz', olho: 'OE', sedacao: 'Sem Sedação', medicamento: 'Ozurdex', convenio: 'PIX', status: 'Guia Autorizada', valor: 0.00 },
+            { id: 24, data: '22/10/2026', paciente: 'Maria Salete Pessoa Espinola', olho: 'OE', sedacao: 'Sem Sedação', medicamento: 'Avastin', convenio: 'Outros', status: 'Em Análise', valor: 0.00 },
+            { id: 25, data: '26/10/2026', paciente: 'Pedro Alves da Nóbrega', olho: 'OE', sedacao: 'Sem Sedação', medicamento: 'Eylia', convenio: 'UNIMED', status: 'Guia Autorizada', valor: 2556.63 },
+            { id: 26, data: '26/10/2026', paciente: 'Terezinha Abrantes da Silva', olho: 'OE', sedacao: 'Sem Sedação', medicamento: 'Eylia', convenio: 'UNIMED', status: 'Guia Autorizada', valor: 2427.56 },
+            { id: 27, data: '26/10/2026', paciente: 'Ronaldo José Damião', olho: 'OD', sedacao: 'Sem Sedação', medicamento: 'Eylia', convenio: 'UNIMED', status: 'Guia Autorizada', valor: 0.00 },
+            { id: 28, data: '29/10/2026', paciente: 'Leonir Maria Sueth da Silva', olho: 'OD', sedacao: 'Com Sedação', medicamento: 'Eylia', convenio: 'UNIMED', status: 'Guia Autorizada', valor: 2556.63 },
+            { id: 29, data: '29/10/2026', paciente: 'Antônio Gomes de Oliveira', olho: 'OD', sedacao: 'Sem Sedação', medicamento: 'Eylia', convenio: 'Outros', status: 'Guia Autorizada', valor: 0.00 },
+            { id: 30, data: '29/10/2026', paciente: 'Maria Monteiro de Almeida', olho: 'OD', sedacao: 'Com Sedação', medicamento: 'Eylia', convenio: 'UNIMED', status: 'Guia Autorizada', valor: 2556.63 },
+            { id: 31, data: '29/10/2026', paciente: 'Ana Lúcia da Silva', olho: 'OE', sedacao: 'Com Sedação', medicamento: 'Eylia', convenio: 'CASSI', status: 'Guia Autorizada', valor: 426.10 },
+            { id: 32, data: '29/10/2026', paciente: 'Maria do Livramento Domingos da Silva', olho: 'OD', sedacao: 'Sem Sedação', medicamento: 'Eylia', convenio: 'UNIMED', status: 'Guia Autorizada', valor: 2556.63 },
+            { id: 33, data: '29/10/2026', paciente: 'Regina Benigna Gadelha Vital Ribeiro de Barros', olho: 'OD', sedacao: 'Com Sedação', medicamento: 'Ozurdex', convenio: 'UNIMED', status: 'Guia Autorizada', valor: 614.36 }
+        ];
+
+        let filteredData = [...dataset];
+        let sortDirection = 1;
+        let currentSortColumn = '';
+
+        // Chart Instances
+        let chartConvenio, chartMedicamento, chartTemporal, chartOlho;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            initCharts();
+            applyFilters();
+        });
+
+        function formatBRL(val) {
+            return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
+        }
+
+        // FILTER ENGINE
+        function applyFilters() {
+            const convenio = document.getElementById('filterConvenio').value;
+            const medicamento = document.getElementById('filterMedicamento').value;
+            const olho = document.getElementById('filterOlho').value;
+            const sedacao = document.getElementById('filterSedacao').value;
+            const status = document.getElementById('filterStatus').value;
+            const search = document.getElementById('searchInput').value.toLowerCase().trim();
+
+            filteredData = dataset.filter(item => {
+                const matchConv = !convenio || item.convenio === convenio;
+                const matchMed = !medicamento || item.medicamento === medicamento;
+                const matchOlho = !olho || item.olho === olho;
+                const matchSed = !sedacao || item.sedacao === sedacao;
+                const matchStat = !status || item.status === status;
+                const matchSearch = !search || item.paciente.toLowerCase().includes(search) || item.medicamento.toLowerCase().includes(search) || item.convenio.toLowerCase().includes(search);
+
+                return matchConv && matchMed && matchOlho && matchSed && matchStat && matchSearch;
+            });
+
+            document.getElementById('activeCountBadge').innerText = `${filteredData.length} de ${dataset.length} Registros`;
+            
+            updateKPIs();
+            updateCharts();
+            renderTable();
+        }
+
+        function resetAllFilters() {
+            document.getElementById('filterConvenio').value = '';
+            document.getElementById('filterMedicamento').value = '';
+            document.getElementById('filterOlho').value = '';
+            document.getElementById('filterSedacao').value = '';
+            document.getElementById('filterStatus').value = '';
+            document.getElementById('searchInput').value = '';
+            applyFilters();
+        }
+
+        // UPDATE KPI CARDS
+        function updateKPIs() {
+            const totalCount = filteredData.length;
+            const totalRevenue = filteredData.reduce((acc, curr) => acc + curr.valor, 0);
+            const pricedItems = filteredData.filter(i => i.valor > 0);
+            const pricedCount = pricedItems.length;
+            const avgTicket = pricedCount > 0 ? totalRevenue / pricedCount : 0;
+
+            const odCount = filteredData.filter(i => i.olho === 'OD').length;
+            const oeCount = filteredData.filter(i => i.olho === 'OE').length;
+            const niCount = filteredData.filter(i => i.olho !== 'OD' && i.olho !== 'OE').length;
+
+            const autorizadasCount = filteredData.filter(i => i.status === 'Guia Autorizada').length;
+            const autorizadasPct = totalCount > 0 ? ((autorizadasCount / totalCount) * 100).toFixed(1) : '0';
+
+            const analiseCount = filteredData.filter(i => i.status === 'Em Análise' || i.valor === 0).length;
+
+            document.getElementById('kpiRevenue').innerText = formatBRL(totalRevenue);
+            document.getElementById('kpiRevenueSub').innerText = `${pricedCount} guias precificadas`;
+
+            document.getElementById('kpiTotalProcedures').innerText = totalCount;
+            document.getElementById('kpiEyeBreakdown').innerText = `OD: ${odCount} | OE: ${oeCount}${niCount ? ' | N/I: ' + niCount : ''}`;
+
+            document.getElementById('kpiAutorizadasCount').innerText = autorizadasCount;
+            document.getElementById('kpiAutorizadasPct').innerText = `${autorizadasPct.replace('.', ',')}% do total`;
+
+            document.getElementById('kpiAnaliseCount').innerText = analiseCount;
+            document.getElementById('kpiAvgTicket').innerText = formatBRL(avgTicket);
+        }
+
+        // INITIALIZE CHART.JS
+        function initCharts() {
+            Chart.defaults.color = '#94a3b8';
+            Chart.defaults.font.family = 'Inter';
+
+            // Chart 1: Convênio Bar Chart
+            const ctx1 = document.getElementById('chartConvenio').getContext('2d');
+            chartConvenio = new Chart(ctx1, {
+                type: 'bar',
+                data: { labels: [], datasets: [] },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { display: false } },
+                        y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { callback: v => 'R$ ' + v } }
+                    }
+                }
+            });
+
+            // Chart 2: Medicamento Doughnut Chart
+            const ctx2 = document.getElementById('chartMedicamento').getContext('2d');
+            chartMedicamento = new Chart(ctx2, {
+                type: 'doughnut',
+                data: { labels: [], datasets: [] },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'right', labels: { boxWidth: 12, font: { size: 11 } } }
+                    },
+                    cutout: '65%'
+                }
+            });
+
+            // Chart 3: Temporal Line Chart
+            const ctx3 = document.getElementById('chartTemporal').getContext('2d');
+            chartTemporal = new Chart(ctx3, {
+                type: 'line',
+                data: { labels: [], datasets: [] },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { color: 'rgba(255,255,255,0.05)' } },
+                        y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { stepSize: 1 } }
+                    }
+                }
+            });
+
+            // Chart 4: Lateralidade & Sedação Doughnut
+            const ctx4 = document.getElementById('chartOlho').getContext('2d');
+            chartOlho = new Chart(ctx4, {
+                type: 'doughnut',
+                data: { labels: [], datasets: [] },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'right', labels: { boxWidth: 12, font: { size: 11 } } }
+                    },
+                    cutout: '60%'
+                }
+            });
+        }
+
+        // UPDATE CHARTS RE-RENDER
+        function updateCharts() {
+            // Chart 1: Revenue by Convenio
+            const convRev = {};
+            filteredData.forEach(i => {
+                convRev[i.convenio] = (convRev[i.convenio] || 0) + i.valor;
+            });
+            chartConvenio.data = {
+                labels: Object.keys(convRev),
+                datasets: [{
+                    label: 'Faturamento (R$)',
+                    data: Object.values(convRev),
+                    backgroundColor: ['#00a8ff', '#10b981', '#3b82f6', '#8b5cf6', '#f59e0b', '#ec4899', '#64748b'],
+                    borderRadius: 8
+                }]
+            };
+            chartConvenio.update();
+
+            // Chart 2: Medication Share
+            const medCounts = {};
+            filteredData.forEach(i => medCounts[i.medicamento] = (medCounts[i.medicamento] || 0) + 1);
+            chartMedicamento.data = {
+                labels: Object.keys(medCounts),
+                datasets: [{
+                    data: Object.values(medCounts),
+                    backgroundColor: ['#00a8ff', '#3b82f6', '#10b981', '#64748b'],
+                    borderColor: '#0f172a',
+                    borderWidth: 3
+                }]
+            };
+            chartMedicamento.update();
+
+            // Chart 3: Temporal Evolution
+            const datesMap = {};
+            filteredData.forEach(i => datesMap[i.data] = (datesMap[i.data] || 0) + 1);
+            const sortedDates = Object.keys(datesMap).sort();
+            chartTemporal.data = {
+                labels: sortedDates,
+                datasets: [{
+                    label: 'Aplicações',
+                    data: sortedDates.map(d => datesMap[d]),
+                    borderColor: '#00a8ff',
+                    backgroundColor: 'rgba(0, 168, 255, 0.12)',
+                    fill: true,
+                    tension: 0.35,
+                    pointBackgroundColor: '#00a8ff',
+                    pointRadius: 5
+                }]
+            };
+            chartTemporal.update();
+
+            // Chart 4: Lateralidade (OD vs OE)
+            const eyeCounts = { 'Olho Direito (OD)': 0, 'Olho Esquerdo (OE)': 0 };
+            filteredData.forEach(i => {
+                if (i.olho === 'OD') eyeCounts['Olho Direito (OD)']++;
+                else if (i.olho === 'OE') eyeCounts['Olho Esquerdo (OE)']++;
+            });
+            chartOlho.data = {
+                labels: Object.keys(eyeCounts),
+                datasets: [{
+                    data: Object.values(eyeCounts),
+                    backgroundColor: ['#3b82f6', '#00a8ff'],
+                    borderColor: '#0f172a',
+                    borderWidth: 3
+                }]
+            };
+            chartOlho.update();
+        }
+
+        // RENDER DATA TABLE
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+
+            filteredData.forEach(row => {
+                let badgeClass = 'badge-analise';
+                if (row.status === 'Guia Autorizada') badgeClass = 'badge-autorizada';
+                else if (row.convenio === 'PIX') badgeClass = 'badge-pix';
+
+                const displayVal = row.valor > 0 ? formatBRL(row.valor) : '<span class="text-amber-400 font-semibold">Em Análise</span>';
+
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-navy-800/50 transition';
+                tr.innerHTML = `
+                    <td class="py-3 px-3 font-mono text-slate-400">${row.data}</td>
+                    <td class="py-3 px-3 font-semibold text-white">${row.paciente}</td>
+                    <td class="py-3 px-3 text-center">
+                        <span class="px-2 py-0.5 rounded font-mono font-bold text-[10px] bg-brand-cyan/15 text-brand-cyan border border-brand-cyan/30">${row.olho}</span>
+                    </td>
+                    <td class="py-3 px-3 text-slate-300">${row.sedacao}</td>
+                    <td class="py-3 px-3 font-medium text-slate-200">${row.medicamento}</td>
+                    <td class="py-3 px-3 text-slate-400">${row.convenio}</td>
+                    <td class="py-3 px-3">
+                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider ${badgeClass}">
+                            ${row.status}
+                        </span>
+                    </td>
+                    <td class="py-3 px-3 text-right font-bold text-emerald-400">${displayVal}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            const currentTotal = filteredData.reduce((acc, curr) => acc + curr.valor, 0);
+            document.getElementById('tableTotalSum').innerText = formatBRL(currentTotal);
+            document.getElementById('tableSummaryText').innerText = `Mostrando ${filteredData.length} de ${dataset.length} procedimentos auditados`;
+        }
+
+        // TABLE SORTING ENGINE
+        function sortTable(column) {
+            if (currentSortColumn === column) {
+                sortDirection *= -1;
+            } else {
+                currentSortColumn = column;
+                sortDirection = 1;
+            }
+
+            filteredData.sort((a, b) => {
+                let valA = a[column];
+                let valB = b[column];
+
+                if (column === 'valor') {
+                    valA = Number(valA);
+                    valB = Number(valB);
+                }
+
+                if (valA < valB) return -1 * sortDirection;
+                if (valA > valB) return 1 * sortDirection;
+                return 0;
+            });
+
+            renderTable();
+        }
+
+        // EXPORT TABLE TO CSV
+        function exportCSV() {
+            let csv = "Data;Paciente;Olho;Sedacao;Medicamento;Convenio;Status_Guia;Valor_BRL\n";
+            filteredData.forEach(r => {
+                csv += `"${r.data}";"${r.paciente}";"${r.olho}";"${r.sedacao}";"${r.medicamento}";"${r.convenio}";"${r.status}";"${r.valor}"\n`;
+            });
+
+            const link = document.createElement("a");
+            link.href = "data:text/csv;charset=utf-8," + encodeURIComponent(csv);
+            link.download = `Hospital_Provisao_Dr_Rodrigo_Almeida_Outubro2026.csv`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>
